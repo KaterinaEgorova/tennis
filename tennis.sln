@@ -3,7 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TennisMatch", "TennisMatch\TennisMatch.csproj", "{D869FEDE-4E42-4D6E-8312-2330722E2770}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TennisMatch.Tests", "TennisMatch.Tests\TennisMatch.Tests.csproj", "{145C9AC5-3493-42B8-9E52-22607B35E73A}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D869FEDE-4E42-4D6E-8312-2330722E2770}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D869FEDE-4E42-4D6E-8312-2330722E2770}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D869FEDE-4E42-4D6E-8312-2330722E2770}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D869FEDE-4E42-4D6E-8312-2330722E2770}.Release|Any CPU.Build.0 = Release|Any CPU
+		{145C9AC5-3493-42B8-9E52-22607B35E73A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{145C9AC5-3493-42B8-9E52-22607B35E73A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{145C9AC5-3493-42B8-9E52-22607B35E73A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{145C9AC5-3493-42B8-9E52-22607B35E73A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
