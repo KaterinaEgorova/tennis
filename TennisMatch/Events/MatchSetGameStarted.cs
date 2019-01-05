@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace TennisMatch.Events
 {
-    class MatchSetGameStarted
+    public class MatchSetGameStarted: IEvent
     {
+        public Guid MatchGuid { get; set; }
+        public Guid SetGuid { get; set; }
+        public Guid GameGuid { get; set; }
     }
 }

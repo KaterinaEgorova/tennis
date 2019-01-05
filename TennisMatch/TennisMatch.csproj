@@ -48,9 +48,12 @@
   <ItemGroup>
     <Compile Include="Commands\CreateMatch.cs" />
     <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\StartMatchSetGame.cs" />
     <Compile Include="Commands\StartSet.cs" />
+    <Compile Include="Domain\Game.cs" />
     <Compile Include="Domain\Match.cs" />
     <Compile Include="Domain\Set.cs" />
+    <Compile Include="Events\MatchSetGameStarted.cs" />
     <Compile Include="Events\ValidationError.cs" />
     <Compile Include="Events\IEvent.cs" />
     <Compile Include="Events\MatchCreated.cs" />
