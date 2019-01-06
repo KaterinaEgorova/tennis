@@ -10,7 +10,13 @@ namespace TennisMatch
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(TennisMatchSimulation.Run().ToString());
+            for (int i = 0; i < 1; i++)
+            {
+                Console.WriteLine($"********** MATCH {i+1} *******************");
+                TennisMatchSimulation.Run(line => {
+                    Console.WriteLine(line);
+                });
+            }
             Console.ReadLine();
         }
     }

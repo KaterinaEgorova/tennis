@@ -9,14 +9,14 @@ namespace TennisMatch
 {
     public class TennisMatchSimulation
     {
-        public static Match Run()
+        private static Random rnd = new Random();
+        public static void Run(Action<string> log)
         {
-            var rnd = new Random();
             var match = new Match();
             while (!match.IsComplete())
             {
                 var set = match.AddSet();
-                Console.WriteLine("Set started.");
+                log?.Invoke("Set started.");
                 while (!set.IsComplete())
                 {
                     if (set.IsTiebreak())
@@ -26,27 +26,26 @@ namespace TennisMatch
                             set.ScoreTiebreakP1();
                         else
                             set.ScoreTiebreakP2();
+                         log?.Invoke($"Tiebreak: {set.ToString()}");
                     }
                     else {
                         // else start and play new game
                         var game = set.AddGame();
-                        Console.WriteLine("Game started.");
+                         log?.Invoke("Game started.");
                         while (!game.IsComplete())
                         {
                             if (rnd.Next(2) == 0)
                                 game.ScoreP1();
                             else
                                 game.ScoreP2();
-                            Console.WriteLine(game.ToString());
+                             log?.Invoke(game.ToString());
                         }
-                        Console.WriteLine("Game completed.");
+                         log?.Invoke($"Game completed. Winner is {game.GetWinner()}.");
                     }
                 }
-                Console.WriteLine("Set completed. Score: ");
-                Console.WriteLine(set.ToString());
+                 log?.Invoke($"Set completed. Winner is {set.GetWinner()}. Score: {set.ToString()}");
             }
-            Console.WriteLine("Match completed. Match results:");
-            return match;
+             log?.Invoke($"Match completed. Match results: {match.ToString()}");
         }
     }
 }
