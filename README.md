@@ -28,3 +28,17 @@ Write a program to simulate a tennis match.
 # Notes
 
 You can make your own assumptions for things that are not explicitly specified. You are also free to make use of any packages or tools that you think would be helpful.
+
+# Requrements to run the application
+
+* VS 2017
+* .Net Framework 4.7.2
+
+# How to start the application
+
+* Get the code. 
+* Compile. 
+* Run the TennisMatch console application.
+
+The applicatin will start Match simulator and will output the progress of the game. 
+At the end the results of the match will be displayed.
