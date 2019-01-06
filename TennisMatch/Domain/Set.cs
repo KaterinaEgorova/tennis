@@ -8,9 +8,14 @@ namespace TennisMatch.Domain
 {
     public class Set
     {
+        private const int MarginToWin = 2;
+        private const int NumGamesToWinASet = 6;
+        private const int TieBreakPointsToWin = 7;
+
         private readonly List<Game> games = new List<Game>();
         private int tiebreakPoints1 = 0;
         private int tiebreakPoints2 = 0;
+
         IReadOnlyList<Game> Games { get { return games; } }
 
         public Game AddGame()
@@ -96,15 +101,15 @@ namespace TennisMatch.Domain
 
         private static bool IsTiebreak(int points1, int points2)
         {
-            return ((points1 == points2) && (points1 >= 6));
+            return ((points1 == points2) && (points1 >= NumGamesToWinASet));
         }
 
         private static bool IsSetWonByPlayer(int gamePoints1, int tiebreakPoints1, int gamePoints2, int tiebreakPoints2)
         {
             return
-                ((gamePoints1 >= 7) && ((gamePoints1 - gamePoints2) >= 2)) // set won by 7 games
+                ((gamePoints1 >= NumGamesToWinASet) && ((gamePoints1 - gamePoints2) >= MarginToWin)) // set won by 6 games
                 || (IsTiebreak(gamePoints1, gamePoints2) // or tiebreak was required
-                    && (tiebreakPoints1 >= 7) && ((tiebreakPoints1 - tiebreakPoints2) >= 2)); // and set won by tiebreak
+                    && (tiebreakPoints1 >= TieBreakPointsToWin) && ((tiebreakPoints1 - tiebreakPoints2) >= MarginToWin)); // and set won by tiebreak
         }
 
         private static string GetScoreAsString(int gamePoints, int tiebreakPoints)

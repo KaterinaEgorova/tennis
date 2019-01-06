@@ -11,6 +11,7 @@ namespace TennisMatch.Tests
     [TestFixture]
     public class SetTests
     {
+        private const int NumberGamesToWin = 6;
         [Test]
         public void WhenSetJustStaretdItShouldNotBeCompletedYet()
         {
@@ -36,7 +37,7 @@ namespace TennisMatch.Tests
         public void When12GamesPlayedWithSixSixScoreThenShouldBeTieBreak()
         {
             var set = new Set();
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < NumberGamesToWin; i++)
             {
                 var game = set.AddGame();
                 for (int j = 0; j < 4; j++)
@@ -67,7 +68,7 @@ namespace TennisMatch.Tests
         public void WhenTryToAddGameToCompletedSetShouldThrow()
         {
             var set = new Set();
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < NumberGamesToWin; i++)
             {
                 var game = set.AddGame();
                 for (int j = 0; j < 4; j++)

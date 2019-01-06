@@ -11,12 +11,14 @@ namespace TennisMatch.Tests
     [TestFixture]
     public class MatchTests
     {
+        private const int NumberGamesToWin = 6;
+
         [Test]
         public void WhenThreeSetsArePlayedThenMatchShouldBeComplete()
         {
             var match = new Match();
             var set = match.AddSet();
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < NumberGamesToWin; i++)
             {
                 var game = set.AddGame();
                 for (int j = 0; j < 4; j++)
@@ -25,7 +27,7 @@ namespace TennisMatch.Tests
                 }
             }
             set = match.AddSet();
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < NumberGamesToWin; i++)
             {
                 var game = set.AddGame();
                 for (int j = 0; j < 4; j++)
@@ -34,7 +36,7 @@ namespace TennisMatch.Tests
                 }
             }
             set = match.AddSet();
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < NumberGamesToWin; i++)
             {
                 var game = set.AddGame();
                 for (int j = 0; j < 4; j++)
@@ -50,7 +52,7 @@ namespace TennisMatch.Tests
         {
             var match = new Match();
             var set = match.AddSet();
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < NumberGamesToWin; i++)
             {
                 var game = set.AddGame();
                 for (int j = 0; j < 4; j++)
@@ -59,7 +61,7 @@ namespace TennisMatch.Tests
                 }
             }
             set = match.AddSet();
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < NumberGamesToWin; i++)
             {
                 var game = set.AddGame();
                 for (int j = 0; j < 4; j++)
@@ -68,7 +70,7 @@ namespace TennisMatch.Tests
                 }
             }
             set = match.AddSet();
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < NumberGamesToWin; i++)
             {
                 var game = set.AddGame();
                 for (int j = 0; j < 4; j++)
