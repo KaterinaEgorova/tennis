@@ -48,7 +48,12 @@ namespace TennisMatch.Domain
             
             if (IsTiebreak(points.Item1, points.Item2))
             {
-                //todo handle tiebreak
+                PlayerOneTieBreakPoints++;
+                result.Add(new TiebreakPointWonByPlayerOne
+                {
+                    MatchGuid = this.MatchGuid,
+                    SetGuid = this.SetGuid,
+                });
             }
             else
             {
@@ -73,7 +78,15 @@ namespace TennisMatch.Domain
             }
             if (IsSetComplete())
             {
-                //tot add event
+                result.Add(new SetCompleted
+                {
+                    MatchGuid = this.MatchGuid,
+                    SetGuid = this.SetGuid,
+                    PlayerOneoints = this.PlayerOnePoints,
+                    PlayerTwoPoints = this.PlayerTwoPoints,
+                    PlayerOneTieBreakPoints = this.PlayerOneTieBreakPoints,
+                    PlayerTwoTieBreakPoints = this.PlayerTwoTieBreakPoints
+                });
             }
             return result;
         }
@@ -93,6 +106,56 @@ namespace TennisMatch.Domain
                 ((gamePoints1 >= NumGamesToWinASet) && ((gamePoints1 - gamePoints2) >= MarginToWin)) // set won by 6 games
                 || (IsTiebreak(gamePoints1, gamePoints2) // or tiebreak was required
                     && (tiebreakPoints1 >= TieBreakPointsToWin) && ((tiebreakPoints1 - tiebreakPoints2) >= MarginToWin)); // and set won by tiebreak
+        }
+
+        internal IEnumerable<IEvent> HandlePlayerTwoScorePoint()
+        {
+            var result = new List<IEvent>();
+            var points = GetCurrentPoints();
+
+            if (IsTiebreak(points.Item1, points.Item2))
+            {
+                PlayerTwoTieBreakPoints++;
+                result.Add(new TiebreakPointWonByPlayerTwo
+                {
+                    MatchGuid = this.MatchGuid,
+                    SetGuid = this.SetGuid,
+                });
+            }
+            else
+            {
+                Game currentGame;
+                if (this.Games == null ||
+                    !this.Games.Any(x => x.Status == InProgress))
+                {
+                    currentGame = this.StartGame(Guid.NewGuid());
+
+                    result.Add(new MatchSetGameStarted
+                    {
+                        MatchGuid = this.MatchGuid,
+                        SetGuid = this.SetGuid,
+                        GameGuid = currentGame.GameGuid,
+                    });
+                }
+                else
+                {
+                    currentGame = this.Games.First(x => x.Status == InProgress);
+                }
+                result.AddRange(currentGame.HandlePlayerTwoScorePoint());
+            }
+            if (IsSetComplete())
+            {
+                result.Add(new SetCompleted
+                {
+                    MatchGuid = this.MatchGuid,
+                    SetGuid = this.SetGuid,
+                    PlayerOneoints = this.PlayerOnePoints,
+                    PlayerTwoPoints = this.PlayerTwoPoints,
+                    PlayerOneTieBreakPoints = this.PlayerOneTieBreakPoints,
+                    PlayerTwoTieBreakPoints = this.PlayerTwoTieBreakPoints
+                });
+            }
+            return result;
         }
 
         private static bool IsTiebreak(int points1, int points2)

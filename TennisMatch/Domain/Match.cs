@@ -10,10 +10,7 @@ namespace TennisMatch.Domain
     {
         private const string Finished = "Finished";
         private const string InProgress = "In Progress";
-        private static readonly int NumGamesToWinASet = 6;
-        public static readonly int TieBreakPointsToWin = 7;
-        private static readonly int MarginToWin = 2;
-
+        
         private string Status { get; set; }
         private Guid MatchGuid { get; set; }
         private List<Set> Sets { get; set; }
@@ -32,6 +29,63 @@ namespace TennisMatch.Domain
             {
                 this.OnMatchSetGameStarted(evt as MatchSetGameStarted);
             }
+            else if (evt is PlayerOneWonPoint)
+            {
+                this.OnPlayerOneWonPoint(evt as PlayerOneWonPoint);
+            }
+            else if (evt is PlayerTwoWonPoint)
+            {
+                this.OnPlayerTwoWonPoint(evt as PlayerTwoWonPoint);
+            }
+            else if (evt is GameCompleted)
+            {
+                this.OnGameCompleted(evt as GameCompleted);
+            }
+            else if (evt is SetCompleted)
+            {
+                this.OnSetCompleted(evt as SetCompleted);
+            }
+            else if (evt is TiebreakPointWonByPlayerOne)
+            {
+                this.OnTieBreackPointWonByPlayerOne(evt as TiebreakPointWonByPlayerOne);
+            }
+            else if (evt is TiebreakPointWonByPlayerTwo)
+            {
+                this.OnTieBreakPointWonByPlayerOne(evt as TiebreakPointWonByPlayerTwo);
+            }
+        }
+
+        private void OnTieBreakPointWonByPlayerOne(TiebreakPointWonByPlayerTwo evt)
+        {
+            this.Sets.First(x => x.SetGuid == evt.SetGuid).PlayerTwoTieBreakPoints++;
+        }
+
+        private void OnTieBreackPointWonByPlayerOne(TiebreakPointWonByPlayerOne evt)
+        {
+            this.Sets.First(x => x.SetGuid == evt.SetGuid).PlayerOneTieBreakPoints++;
+        }
+
+        private void OnSetCompleted(SetCompleted evt)
+        {
+            this.Sets.First(x => x.SetGuid == evt.SetGuid).Status = Finished;
+        }
+
+        private void OnGameCompleted(GameCompleted evt)
+        {
+            this.Sets.First(x => x.SetGuid == evt.SetGuid).
+                Games.First(x => x.GameGuid == evt.GameGuid).Status = Finished;
+        }
+
+        private void OnPlayerTwoWonPoint(PlayerTwoWonPoint evt)
+        {
+            this.Sets.First(x => x.SetGuid == evt.SetGuid).
+                Games.First(x => x.GameGuid == evt.GameGuid).PlayerTwoPoints++;
+        }
+
+        private void OnPlayerOneWonPoint(PlayerOneWonPoint evt)
+        {
+            this.Sets.First(x => x.SetGuid == evt.SetGuid).
+                Games.First(x => x.GameGuid == evt.GameGuid).PlayerOnePoints++;
         }
 
         private void OnMatchSetGameStarted(MatchSetGameStarted evt)
@@ -68,19 +122,59 @@ namespace TennisMatch.Domain
             {
                 return CreateMatch(command as CreateMatch);
             }
-            else if (command is StartMatchSet)
-            {
-                return StartMatchSet(command as StartMatchSet);
-            }
-            else if (command is StartMatchSetGame)
-            {
-                return StartSetGame(command as StartMatchSetGame);
-            }
             else if (command is ScorePointForPlayerOne)
             {
                 return ScorePointForPlayerOne(command as ScorePointForPlayerOne);
             }
+            else if (command is ScorePointForPlayerTwo)
+            {
+                return ScorePointForPlayerTwo(command as ScorePointForPlayerTwo);
+            }
             throw new NotImplementedException();
+        }
+
+        private List<IEvent> ScorePointForPlayerTwo(ScorePointForPlayerTwo command)
+        {
+            var errors = new List<string>();
+            if (this.Status != InProgress)
+            {
+                errors.Add("Status: Match status must be in progress.");
+            }
+
+            var result = new List<IEvent>();
+            Set currentSet;
+            if (this.Sets == null || !this.Sets.Any(x => x.Status == InProgress))
+            {
+                currentSet = new Set
+                {
+                    MatchGuid = this.MatchGuid,
+                    SetGuid = Guid.NewGuid()
+                };
+                result.Add(new MatchSetStarted
+                {
+                    MatchGuid = this.MatchGuid,
+                    SetGuid = currentSet.SetGuid
+                });
+            }
+            else
+            {
+                currentSet = Sets.First(x => x.Status == InProgress);
+            }
+            result.AddRange(currentSet.HandlePlayerTwoScorePoint());
+            if (IsComplete())
+            {
+                result.Add(new MatchComplete {
+                    MatchGuid = this.MatchGuid
+                });
+            }
+            return result;
+
+        }
+
+        private bool IsComplete()
+        {
+            //todo: implement 
+            return false;
         }
 
         private List<IEvent> ScorePointForPlayerOne(ScorePointForPlayerOne command)
@@ -111,53 +205,9 @@ namespace TennisMatch.Domain
             }
             result.AddRange(currentSet.HandlePlayerOneScorePoint());
             
-                //if (IsTieBreak(set.))
-            
             return result;
         }
-
         
-        private List<IEvent> StartSetGame(StartMatchSetGame command)
-        {
-            var errors = new List<string>();
-            var set = this.Sets.FirstOrDefault(x => x.SetGuid == command.SetGuid);
-            if (set == null)
-            {
-                errors.Add("Set: Set not found");
-            }
-            if (errors.Any())
-                throw new ApplicationException(string.Join(";", errors));
-            if (set.Status == Finished)
-            {
-                errors.Add("Set: Set is finished");
-            }
-            if (errors.Any())
-                throw new ApplicationException(string.Join(";", errors));
-            return new List<IEvent> { new MatchSetGameStarted{
-                MatchGuid = command.MatchGuid,
-                SetGuid = command.SetGuid,
-                GameGuid = command.GameGuid
-            } };
-        }
-
-        private List<IEvent> StartMatchSet(StartMatchSet command)
-        {
-            var errors = new List<string>();
-            if (this.Sets != null && this.Sets.Any(x=>x.Status == InProgress))
-            {
-                errors.Add("Sets: Cannot start Set while other set is in progress" );
-            }
-            if(this.Status == Finished)
-            {
-                errors.Add("MatchStatus: Match is finished.");
-            }
-
-            if (errors.Any())
-                throw new ApplicationException(string.Join(";", errors));
-
-            return new List<IEvent> { new MatchSetStarted { MatchGuid = command.MatchGuid, SetGuid = command.SetGuid } };
-        }
-
         private List<IEvent> CreateMatch(CreateMatch command)
         {
 

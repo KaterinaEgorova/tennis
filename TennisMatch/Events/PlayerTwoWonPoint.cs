@@ -1,14 +1,15 @@
 ﻿using System;
-using TennisMatch.Events;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace TennisMatch.Events
 {
-    public class GameCompleted : IEvent
+    public class PlayerTwoWonPoint: IEvent
     {
         public Guid MatchGuid { get; set; }
         public Guid SetGuid { get; set; }
         public Guid GameGuid { get; set; }
-        public int PlayerOnePoints { get; set; }
-        public int PlayerTwoPoints { get; set; }
     }
 }

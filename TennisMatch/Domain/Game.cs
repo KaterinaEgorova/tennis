@@ -61,5 +61,29 @@ namespace TennisMatch.Domain
                 result = Winners.P2;
             return result;
         }
+
+        internal IEnumerable<IEvent> HandlePlayerTwoScorePoint()
+        {
+            var result = new List<IEvent>();
+            PlayerTwoPoints++;
+            result.Add(new PlayerTwoWonPoint
+            {
+                MatchGuid = this.MatchGuid,
+                SetGuid = this.SetGuid,
+                GameGuid = this.GameGuid
+            });
+            if (IsGameComplete())
+            {
+                result.Add(new GameCompleted
+                {
+                    MatchGuid = this.MatchGuid,
+                    SetGuid = this.SetGuid,
+                    GameGuid = this.GameGuid,
+                    PlayerOnePoints = this.PlayerOnePoints,
+                    PlayerTwoPoints = this.PlayerTwoPoints,
+                });
+            }
+            return result;
+        }
     }
 }
