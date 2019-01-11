@@ -12,6 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -48,12 +49,17 @@
   <ItemGroup>
     <Compile Include="Commands\CreateMatch.cs" />
     <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\ScorePointForPlayerOne.cs" />
     <Compile Include="Commands\StartMatchSetGame.cs" />
     <Compile Include="Commands\StartSet.cs" />
     <Compile Include="Domain\Game.cs" />
+    <Compile Include="Domain\Winners.cs" />
+    <Compile Include="Events\SetCompleted.cs" />
+    <Compile Include="Events\GameCompleted.cs" />
     <Compile Include="Domain\Match.cs" />
     <Compile Include="Domain\Set.cs" />
     <Compile Include="Events\MatchSetGameStarted.cs" />
+    <Compile Include="Events\PlayerOneWonPoint.cs" />
     <Compile Include="Events\ValidationError.cs" />
     <Compile Include="Events\IEvent.cs" />
     <Compile Include="Events\MatchCreated.cs" />

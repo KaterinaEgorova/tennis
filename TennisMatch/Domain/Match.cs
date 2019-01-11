@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TennisMatch.Events;
 using TennisMatch.Commands;
 
@@ -12,11 +10,14 @@ namespace TennisMatch.Domain
     {
         private const string Finished = "Finished";
         private const string InProgress = "In Progress";
+        private static readonly int NumGamesToWinASet = 6;
+        public static readonly int TieBreakPointsToWin = 7;
+        private static readonly int MarginToWin = 2;
 
         private string Status { get; set; }
         private Guid MatchGuid { get; set; }
         private List<Set> Sets { get; set; }
-
+        
         public void Hydrate(IEvent evt)
         {
             if (evt is MatchCreated)
@@ -25,7 +26,7 @@ namespace TennisMatch.Domain
             }
             else if (evt is MatchSetStarted)
             {
-                this.OnMatchStarted(evt as MatchSetStarted);
+                this.OnSetStarted(evt as MatchSetStarted);
             }
             else if (evt is MatchSetGameStarted)
             {
@@ -36,16 +37,23 @@ namespace TennisMatch.Domain
         private void OnMatchSetGameStarted(MatchSetGameStarted evt)
         {
             this.Sets.First(x => x.SetGuid == evt.SetGuid).
-                Games.Add(new Game {Status = InProgress, SetGuid = evt.SetGuid, MatchGuid = evt.MatchGuid, GameGuid = evt.GameGuid });
+                Games.Add(new Game {
+                    Status = InProgress,
+                    SetGuid = evt.SetGuid,
+                    MatchGuid = evt.MatchGuid,
+                    GameGuid = evt.GameGuid });
         }
 
-        private void OnMatchStarted(MatchSetStarted evt)
+        private void OnSetStarted(MatchSetStarted evt)
         {
             if (this.Sets == null)
             {
                 this.Sets = new List<Set>();
             }
-            this.Sets.Add(new Set { Status = InProgress, SetGuid = evt.SetGuid, MatchGuid = evt.MatchGuid });
+            this.Sets.Add(new Set {
+                Status = InProgress,
+                SetGuid = evt.SetGuid,
+                MatchGuid = evt.MatchGuid });
         }
 
         private void OnMatchCreated(MatchCreated evt)
@@ -68,9 +76,47 @@ namespace TennisMatch.Domain
             {
                 return StartSetGame(command as StartMatchSetGame);
             }
+            else if (command is ScorePointForPlayerOne)
+            {
+                return ScorePointForPlayerOne(command as ScorePointForPlayerOne);
+            }
             throw new NotImplementedException();
         }
 
+        private List<IEvent> ScorePointForPlayerOne(ScorePointForPlayerOne command)
+        {
+            var errors = new List<string>();
+            if (this.Status != InProgress)
+            {
+                errors.Add("Status: Match status must be in progress.");
+            }
+            
+            var result = new List<IEvent>();
+            Set currentSet;
+            if (this.Sets == null || !this.Sets.Any(x=>x.Status ==InProgress))
+            {
+                currentSet = new Set
+                {
+                    MatchGuid = this.MatchGuid,
+                    SetGuid = Guid.NewGuid()
+                };
+                result.Add(new MatchSetStarted {
+                    MatchGuid = this.MatchGuid,
+                    SetGuid = currentSet.SetGuid
+                });
+            }
+            else
+            {
+                currentSet = Sets.First(x => x.Status == InProgress);
+            }
+            result.AddRange(currentSet.HandlePlayerOneScorePoint());
+            
+                //if (IsTieBreak(set.))
+            
+            return result;
+        }
+
+        
         private List<IEvent> StartSetGame(StartMatchSetGame command)
         {
             var errors = new List<string>();
